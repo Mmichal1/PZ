@@ -1,0 +1,13 @@
+# File: turtlebot3_supervisor/action/ReserveSector.action
+# Request
+# sector - sector ID that the robot requests permission to occupy
+int8 sector
+---
+# Result
+# 'true' is sent if or when the requested sector is free
+bool permission
+---
+# Feedback
+# 'false' is sent if requested sector is occupied
+# (don't know if needed)
+bool permission
