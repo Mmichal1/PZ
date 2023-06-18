@@ -6,7 +6,7 @@ from rclpy.action import ActionServer, CancelResponse, GoalResponse
 from nav_msgs.msg import OccupancyGrid
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
-from std_msgs.msg import Int16 
+from std_msgs.msg import Int8
 from turtlebot_interfaces.action import ReserveSector
 
 class TurtleBotSupervisor(Node):
@@ -30,8 +30,8 @@ class TurtleBotSupervisor(Node):
 
     def _declare_default_parameters(self):
         self.declare_parameter('grid_frame_id', 'map')
-        self.declare_parameter('size_x', 5)
-        self.declare_parameter('size_y', 5)
+        self.declare_parameter('size_x', 4)
+        self.declare_parameter('size_y', 4)
         self.declare_parameter('resolution', 1.0)
 
     def _create_map(self):
@@ -40,20 +40,20 @@ class TurtleBotSupervisor(Node):
         self.grid.info.resolution = self.resolution
         self.grid.info.width = self.size_x
         self.grid.info.height = self.size_y
-        self.grid.info.origin.position.x = 0.0
-        self.grid.info.origin.position.y = 0.0
+        self.grid.info.origin.position.x = - self.size_x / 2
+        self.grid.info.origin.position.y = - self.size_y / 2
         self.grid.data = np.full(self.size_x * self.size_y, 0, dtype=int).tolist()
         self.get_logger().info(f'Map size: x: {self.grid.info.width}, y: {self.grid.info.height}, resolution: {self.grid.info.resolution}.')
 
     def _create_publishers(self):
-        self.publisher_occupancy_grid = self.create_publisher(OccupancyGrid, '/supervisor_map', 10)
+        self.publisher_occupancy_grid = self.create_publisher(OccupancyGrid, '/supervisor/map', 10)
 
     def _create_timers(self):
         self.timer_mine_publisher = self.create_timer(1.0, self.publish_grid)
 
     def _create_subscriber(self, supervisor_callback_group):
         self.subscriber_free_sector = self.create_subscription(
-            Int16, '/supervisor/free_sector', self.listener_callback, 10, callback_group=supervisor_callback_group)
+            Int8, '/supervisor/free_sector', self.listener_callback, 10, callback_group=supervisor_callback_group)
         
     def _create_action(self, supervisor_callback_group):
         self._action_server = ActionServer(self, ReserveSector, 'supervisor', 

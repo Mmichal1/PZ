@@ -23,7 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'supervisor = turtlebot_supervisor.turtlebot_supervisor:main'
+            'supervisor = turtlebot_supervisor.turtlebot_supervisor:main',
         ],
     },
 )
